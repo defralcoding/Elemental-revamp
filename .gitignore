@@ -11,3 +11,4 @@ elrond.workspace.json
 revamp-sc/Cargo.lock
 revamp-sc/deploy.interaction.json
 *Cargo.lock
+revamp-dapp/node_modules
