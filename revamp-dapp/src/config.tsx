@@ -1,10 +1,12 @@
 export const contractAddress =
-  'erd1qqqqqqqqqqqqqpgq72l6vl07fkn3alyfq753mcy4nakm0l72396qkcud5x';
+	"erd1qqqqqqqqqqqqqpgqmapqhnvjkxn5wtsj08mjdjl8sxy42df24jwsfden2a";
 
-export const dAppName = 'example Dapp';
+export const dAppName = "Elemental Apes Swap";
 
-// Generate your own WalletConnect 2 ProjectId here: https://cloud.walletconnect.com/app
-export const walletConnectV2ProjectId = '9b1a9564f91cb659ffe21b73d5c4e2d8';
+export const oldCollection = "GIANT-1ed993";
+export const newCollection = "REVAMP-6ac8d1";
+
+export const apiAddress = "https://devnet-api.elrond.com";
 
 export const apiTimeout = 6000;
 export const transactionSize = 15;

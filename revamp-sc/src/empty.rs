@@ -116,6 +116,7 @@ pub trait EmptyContract {
     #[storage_mapper("nextIndexToSend")]
     fn next_index_to_send(&self) -> SingleValueMapper<(usize, usize)>;
 
+    #[view(sentIndexesTotal)]
     #[storage_mapper("sentIndexesTotal")]
     fn sent_indexes_total(&self) -> SingleValueMapper<u32>;
     

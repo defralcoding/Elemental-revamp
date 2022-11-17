@@ -4,7 +4,6 @@
 */target/
 
 # The erdpy output
-output*
 .DS_Store
 elrond.workspace.json
 .vscode/*
@@ -12,3 +11,5 @@ revamp-sc/Cargo.lock
 revamp-sc/deploy.interaction.json
 *Cargo.lock
 revamp-dapp/node_modules
+revamp-dapp/package-lock.json
+revamp-dapp/yarn.lock

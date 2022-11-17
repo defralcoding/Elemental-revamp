@@ -1,70 +1,78 @@
-import * as React from 'react';
-import { useEffect, useState } from 'react';
-import { useGetPendingTransactions } from '@elrondnetwork/dapp-core/hooks/transactions/useGetPendingTransactions';
-import { sendTransactions } from '@elrondnetwork/dapp-core/services';
-import { refreshAccount } from '@elrondnetwork/dapp-core/utils';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import moment from 'moment';
-import { contractAddress } from 'config';
-import { useGetTimeToPong, useGetPingAmount } from './helpers';
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { useGetPendingTransactions } from "@elrondnetwork/dapp-core/hooks/transactions/useGetPendingTransactions";
+import { sendTransactions } from "@elrondnetwork/dapp-core/services";
+import { refreshAccount } from "@elrondnetwork/dapp-core/utils";
+import { useGetAccountInfo } from "@elrondnetwork/dapp-core/hooks";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	Address,
+	ESDTNFTTransferPayloadBuilder,
+	TokenPayment,
+} from "@elrondnetwork/erdjs";
+import moment from "moment";
+import {
+	contractAddress,
+	oldCollection,
+	newCollection,
+	apiAddress,
+} from "config";
 
 export const Actions = () => {
-  const { hasPendingTransactions } = useGetPendingTransactions();
-  const getTimeToPong = useGetTimeToPong();
-  const pingAmount = useGetPingAmount();
+	const { address, account } = useGetAccountInfo();
+	const { hasPendingTransactions } = useGetPendingTransactions();
 
-  const [secondsLeft, setSecondsLeft] = useState<number>();
-  const [hasPing, setHasPing] = useState<boolean>();
-  const /*transactionSessionId*/ [, setTransactionSessionId] = useState<
-      string | null
-    >(null);
+	const /*transactionSessionId*/ [, setTransactionSessionId] = useState<
+			string | null
+		>(null);
 
-  const mount = () => {
-    if (secondsLeft) {
-      const interval = setInterval(() => {
-        setSecondsLeft((existing) => {
-          if (existing) {
-            return existing - 1;
-          } else {
-            clearInterval(interval);
-            return 0;
-          }
-        });
-      }, 1000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  };
+	const sendSwap = async () => {
+		//Get NFTs
+		let nfts = Array();
 
-  useEffect(mount, [hasPing]);
+		fetch(
+			`${apiAddress}/accounts/${address}/nfts?collections=${oldCollection}&size=1000`
+		)
+			.then((response) => response.json())
+			.then(async (data) => {
+				nfts = data;
+				console.log(nfts);
 
-  const setSecondsRemaining = async () => {
-    const secondsRemaining = await getTimeToPong();
+				//Create transactions
+				let transactions = Array();
+				nfts.forEach((nft) => {
+					let payment = TokenPayment.nonFungible(nft.collection, nft.nonce);
+					let payload = new ESDTNFTTransferPayloadBuilder()
+						.setPayment(payment)
+						.setDestination(new Address(contractAddress))
+						.build();
 
-    switch (secondsRemaining) {
-      case undefined:
-      case null:
-        setHasPing(true);
-        break;
-      case 0:
-        setSecondsLeft(0);
-        setHasPing(false);
-        break;
-      default: {
-        setSecondsLeft(secondsRemaining);
-        setHasPing(false);
-        break;
-      }
-    }
-  };
+					transactions.push({
+						value: 0,
+						data: payload.toString() + "@" + "73776170", //swap
+						receiver: address,
+						gasLimit: 10_000_000,
+					});
+				});
 
-  useEffect(() => {
-    setSecondsRemaining();
-  }, [hasPendingTransactions]);
+				await refreshAccount();
 
-  const sendPingTransaction = async () => {
+				const { sessionId, error } = await sendTransactions({
+					transactions: transactions,
+					transactionsDisplayInfo: {
+						processingMessage: "Processing Swap transaction",
+						errorMessage: "An error has occured during Swap",
+						successMessage: "Swap completed!",
+					},
+					redirectAfterSign: false,
+				});
+				if (sessionId != null) {
+					setTransactionSessionId(sessionId);
+				}
+			});
+
+		/*
     const pingTransaction = {
       value: pingAmount,
       data: 'ping',
@@ -73,7 +81,7 @@ export const Actions = () => {
     };
     await refreshAccount();
 
-    const { sessionId /*, error*/ } = await sendTransactions({
+    const { sessionId , error } = await sendTransactions({
       transactions: pingTransaction,
       transactionsDisplayInfo: {
         processingMessage: 'Processing Ping transaction',
@@ -85,87 +93,19 @@ export const Actions = () => {
     if (sessionId != null) {
       setTransactionSessionId(sessionId);
     }
-  };
+    */
+	};
 
-  const sendPongTransaction = async () => {
-    const pongTransaction = {
-      value: '0',
-      data: 'pong',
-      receiver: contractAddress,
-      gasLimit: '60000000'
-    };
-    await refreshAccount();
-
-    const { sessionId /*, error*/ } = await sendTransactions({
-      transactions: pongTransaction,
-      transactionsDisplayInfo: {
-        processingMessage: 'Processing Pong transaction',
-        errorMessage: 'An error has occured during Pong',
-        successMessage: 'Pong transaction successful'
-      },
-      redirectAfterSign: false
-    });
-    if (sessionId != null) {
-      setTransactionSessionId(sessionId);
-    }
-  };
-
-  const pongAllowed = secondsLeft === 0 && !hasPendingTransactions;
-  const notAllowedClass = pongAllowed ? '' : 'not-allowed disabled';
-
-  const timeRemaining = moment()
-    .startOf('day')
-    .seconds(secondsLeft || 0)
-    .format('mm:ss');
-
-  return (
-    <div className='d-flex mt-4 justify-content-center'>
-      {hasPing !== undefined && (
-        <>
-          {hasPing && !hasPendingTransactions ? (
-            <div className='action-btn' onClick={sendPingTransaction}>
-              <button className='btn'>
-                <FontAwesomeIcon icon={faArrowUp} className='text-primary' />
-              </button>
-              <a href='/' className='text-white text-decoration-none'>
-                Ping
-              </a>
-            </div>
-          ) : (
-            <>
-              <div className='d-flex flex-column'>
-                <div
-                  {...{
-                    className: `action-btn ${notAllowedClass}`,
-                    ...(pongAllowed ? { onClick: sendPongTransaction } : {})
-                  }}
-                >
-                  <button className={`btn ${notAllowedClass}`}>
-                    <FontAwesomeIcon
-                      icon={faArrowDown}
-                      className='text-primary'
-                    />
-                  </button>
-                  <span className='text-white'>
-                    {pongAllowed ? (
-                      <a href='/' className='text-white text-decoration-none'>
-                        Pong
-                      </a>
-                    ) : (
-                      <>Pong</>
-                    )}
-                  </span>
-                </div>
-                {!pongAllowed && !hasPendingTransactions && (
-                  <span className='opacity-6 text-white'>
-                    {timeRemaining} until able to Pong
-                  </span>
-                )}
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
+	return (
+		<div className="d-flex mt-4 justify-content-center">
+			<div className="action-btn" onClick={sendSwap}>
+				<button className="btn">
+					<FontAwesomeIcon icon={faArrowUp} className="text-primary" />
+				</button>
+				<a href="/" className="text-white text-decoration-none">
+					Swap All
+				</a>
+			</div>
+		</div>
+	);
 };
