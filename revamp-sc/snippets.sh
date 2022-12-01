@@ -1,17 +1,50 @@
 USER_PEM="~/wallets/development.pem"
 PROXY="https://devnet-gateway.elrond.com"
 CHAIN_ID="D"
-CONTRACT="erd1qqqqqqqqqqqqqpgqmapqhnvjkxn5wtsj08mjdjl8sxy42df24jwsfden2a"
+CONTRACT="erd1qqqqqqqqqqqqqpgqdyy85fsq69ggq8wgdfg2s6klfjp4avt74jwse338yc"
+
+A="--arguments str:GIANT-1ed993 str:REVAMP-6ac8d1 15"
+
+
+COSEDAFARE="**********"
 
 deploy() {
     erdpy --verbose contract deploy --project=${PROJECT} \
     --recall-nonce --pem=${USER_PEM} \
     --gas-limit=59999999 \
     --send --outfile="deploy.interaction.json" \
-    --arguments str:GIANT-1ed993 str:REVAMP-6ac8d1 15 \
     --metadata-payable \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
+
+set_old_collection() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_old_collection" --arguments str:GIANT-1ed993 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
+set_new_collection() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_new_collection" --arguments str:ELEREVAMP-a32b77 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
+set_nfts_left_to_send() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_nfts_left_to_send" --arguments 10 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
+COSEDAFAREFINE="**********"
 
 get() {
     erdpy --verbose contract query ${CONTRACT} \

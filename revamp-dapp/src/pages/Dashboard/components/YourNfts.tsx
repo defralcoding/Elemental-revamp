@@ -75,6 +75,7 @@ export const YourNfts = () => {
 								</div>
 							</div>
 						))}
+						{userNfts.length === 0 && "You don't have any new NFTs yet."}
 					</div>
 				</div>
 			</div>

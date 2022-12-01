@@ -10,6 +10,9 @@ elrond_wasm_node::wasm_endpoints! {
         getTotalTokensLeft
         sentIndexesTotal
         set_high_rank
+        set_new_collection
+        set_nfts_left_to_send
+        set_old_collection
         swap
     )
 }

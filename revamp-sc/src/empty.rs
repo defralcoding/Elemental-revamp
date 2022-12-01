@@ -7,15 +7,27 @@ elrond_wasm::imports!();
 pub trait EmptyContract {
 
     #[init]
-    fn init(&self, 
-       /* old_collection: TokenIdentifier, new_collection: TokenIdentifier, number_nfts_to_send: u32*/
-    ) {
-        /*
+    fn init(&self) {
+        
+    }
+
+    #[endpoint]
+    #[only_owner]
+    fn set_old_collection(&self, old_collection: TokenIdentifier) {
         self.old_collection().set_token_id(&old_collection);
+    }
+
+    #[endpoint]
+    #[only_owner]
+    fn set_new_collection(&self, new_collection: TokenIdentifier) {
         self.new_collection().set_token_id(&new_collection);
+    }
+
+    #[endpoint]
+    #[only_owner]
+    fn set_nfts_left_to_send(&self, number_nfts_to_send: u32) {
         self.nfts_left_to_send().set_initial_len(number_nfts_to_send.try_into().unwrap());
         self.do_shuffle();
-        */
     }
 
     #[endpoint]
@@ -26,6 +38,8 @@ pub trait EmptyContract {
             self.high_rank(nonce).set(number);
         }
     }
+
+    
 
     #[endpoint]
     #[payable("*")]
