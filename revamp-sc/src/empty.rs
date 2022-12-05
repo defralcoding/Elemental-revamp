@@ -39,7 +39,22 @@ pub trait EmptyContract {
         }
     }
 
-    
+    #[endpoint]
+    #[only_owner]
+    fn set_thunders_old(&self, nonces: MultiValueEncoded<u64>) {
+        for nonce in nonces {
+            self.thunders_old().insert(nonce);
+        }
+    }
+
+    #[endpoint]
+    #[only_owner]
+    fn set_thunders_new(&self, nonces: MultiValueEncoded<u64>) {
+        for nonce in nonces {
+            self.thunders_new().insert(nonce);
+        }
+    }
+
 
     #[endpoint]
     #[payable("*")]
@@ -53,14 +68,21 @@ pub trait EmptyContract {
         
         //check if is high ranks
         let high_rank = self.high_rank(nonce).get();
-        let n_nfts_to_send = 1 + high_rank;
+        let mut n_nfts_to_send = 1 + high_rank;
+
+        //check if is thunder
+        let is_thunder = self.thunders_old().contains(&nonce);
+        if is_thunder {
+            self.send_thunder();
+            n_nfts_to_send -= 1;
+        }
 
         //send nfts
         for _ in 0..n_nfts_to_send {
             self.send_nft();
         }
 
-        //temp
+        //TODO TOGLIERE
         self.send().direct(&self.blockchain().get_owner_address(), &payment_token, nonce, &BigUint::from(1u8));
     }
 
@@ -78,6 +100,23 @@ pub trait EmptyContract {
         );
 
         self.handle_next_index_setup(next_index_to_send_tuple);
+    }
+
+    fn send_thunder(&self) {
+        let nonce = self.thunders_new().iter().next().unwrap();
+
+        let new_collection = self.new_collection().get_token_id();
+        let identifier = EgldOrEsdtTokenIdentifier::esdt(new_collection);
+        let caller = self.blockchain().get_caller();
+
+        self.send().direct(
+            &caller,
+            &identifier,
+            nonce,
+            &BigUint::from(1u8),
+        );
+
+        self.thunders_new().swap_remove(&nonce);
     }
 
     fn do_shuffle(&self) {
@@ -117,6 +156,12 @@ pub trait EmptyContract {
 
     #[storage_mapper("highRank")]
     fn high_rank(&self, nonce: u64) -> SingleValueMapper<u8>;
+
+    #[storage_mapper("thundersOld")]
+    fn thunders_old(&self) -> UnorderedSetMapper<u64>;
+
+    #[storage_mapper("thundersNew")]
+    fn thunders_new(&self) -> UnorderedSetMapper<u64>;
 
     #[storage_mapper("oldCollection")]
     fn old_collection(&self) -> NonFungibleTokenMapper<Self::Api>;
