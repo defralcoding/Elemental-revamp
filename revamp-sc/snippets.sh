@@ -44,6 +44,15 @@ set_nfts_left_to_send() {
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
 
+set_high_rank() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_high_rank" --arguments 37 3 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
 set_thunders_old() {
     erdpy contract call ${CONTRACT} \
     --recall-nonce --pem=${USER_PEM} \
@@ -66,7 +75,7 @@ COSEDAFAREFINE="**********"
 
 get() {
     erdpy --verbose contract query ${CONTRACT} \
-    --function "getNumberStakedSecondCollection" \
+    --function "getNftsLeftToSend" \
     --proxy=${PROXY} || return
 }
 

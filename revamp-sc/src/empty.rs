@@ -54,13 +54,13 @@ pub trait EmptyContract {
             self.thunders_new().insert(nonce);
 
             let uid = self.nfts_left_to_send();
-            let nfts_left = uid.iter();
-            for nft in nfts_left {
-                if nonce == uid.get(nft).try_into().unwrap() {
-                    self.nfts_left_to_send().swap_remove(nft);
+            for index in 1..=uid.len() {
+                if uid.get(index) == nonce.try_into().unwrap() {
+                    self.nfts_left_to_send().swap_remove(index);
                 }
             }
         }
+        self.do_shuffle();
     }
 
 
@@ -177,6 +177,7 @@ pub trait EmptyContract {
     #[storage_mapper("newCollection")]
     fn new_collection(&self) -> NonFungibleTokenMapper<Self::Api>;
 
+    #[view(getNftsLeftToSend)]
     #[storage_mapper("nftsLeftToSend")]
     fn nfts_left_to_send(&self) -> UniqueIdMapper<Self::Api>;
 

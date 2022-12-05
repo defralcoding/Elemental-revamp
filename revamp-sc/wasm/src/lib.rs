@@ -7,6 +7,7 @@
 elrond_wasm_node::wasm_endpoints! {
     revamp_sc
     (
+        getNftsLeftToSend
         getTotalTokensLeft
         sentIndexesTotal
         set_high_rank
