@@ -52,6 +52,14 @@ pub trait EmptyContract {
     fn set_thunders_new(&self, nonces: MultiValueEncoded<u64>) {
         for nonce in nonces {
             self.thunders_new().insert(nonce);
+
+            let uid = self.nfts_left_to_send();
+            let nfts_left = uid.iter();
+            for nft in nfts_left {
+                if nonce == uid.get(nft).try_into().unwrap() {
+                    self.nfts_left_to_send().swap_remove(nft);
+                }
+            }
         }
     }
 

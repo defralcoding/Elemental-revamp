@@ -44,6 +44,24 @@ set_nfts_left_to_send() {
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
 
+set_thunders_old() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_thunders_old" --arguments 37 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
+set_thunders_new() {
+    erdpy contract call ${CONTRACT} \
+    --recall-nonce --pem=${USER_PEM} \
+    --gas-limit=5000000 \
+    --function="set_thunders_new" --arguments 9 \
+    --send \
+    --proxy=${PROXY} --chain=${CHAIN_ID} || return
+}
+
 COSEDAFAREFINE="**********"
 
 get() {
