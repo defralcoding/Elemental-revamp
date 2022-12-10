@@ -27,9 +27,19 @@ export const DashboardLayout = () => {
 							</div>
 						</div>
 					</div>
-					<div className="card shadow-sm border-0 mt-2">
+					<div
+						className="card shadow-sm border-0 mt-2"
+						style={{
+							backgroundColor: "rgba(255, 255, 255, 0.3)",
+						}}
+					>
 						<div className="card-body p-1">
-							<div className="card border-0 bg-light">
+							<div
+								className="card border-0"
+								style={{
+									backgroundColor: "rgba(255, 255, 255, 0.3)",
+								}}
+							>
 								<div className="card-body text-center p-4">
 									<YourNfts />
 								</div>
