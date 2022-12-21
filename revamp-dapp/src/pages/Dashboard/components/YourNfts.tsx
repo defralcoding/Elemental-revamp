@@ -69,7 +69,7 @@ export const YourNfts = () => {
 										href={"https://inspire.art/nfts/" + nft.identifier}
 										target="_blank"
 									>
-										#{nft.nonce}
+										{nft.identifier.split("-")[2]}
 									</a>
 								</div>
 							</div>
