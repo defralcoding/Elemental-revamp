@@ -99,9 +99,6 @@ pub trait EmptyContract {
         for _ in 0..n_nfts_to_send {
             self.send_nft();
         }
-
-        //TODO TOGLIERE
-        self.send().direct(&self.blockchain().get_owner_address(), &payment_token, nonce, &BigUint::from(1u8));
     }
 
     fn send_nft(&self) {
