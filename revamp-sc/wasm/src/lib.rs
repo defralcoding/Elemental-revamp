@@ -16,6 +16,7 @@ elrond_wasm_node::wasm_endpoints! {
         set_old_collection
         set_thunders_new
         set_thunders_old
+        shuffle
         swap
     )
 }

@@ -1,7 +1,7 @@
 USER_PEM="~/wallets/development.pem"
-PROXY="https://devnet-gateway.elrond.com"
-CHAIN_ID="D"
-CONTRACT="erd1qqqqqqqqqqqqqpgqdyy85fsq69ggq8wgdfg2s6klfjp4avt74jwse338yc"
+PROXY="https://gateway.elrond.com"
+CHAIN_ID="1"
+CONTRACT="erd1qqqqqqqqqqqqqpgqrfxkuajmzfvcuaynau39vmnpt39463mcdn3qasa9qg"
 
 A="--arguments str:GIANT-1ed993 str:REVAMP-6ac8d1 15"
 
@@ -19,18 +19,20 @@ deploy() {
 
 set_old_collection() {
     erdpy contract call ${CONTRACT} \
-    --recall-nonce --pem=${USER_PEM} \
+    --recall-nonce \
+    --ledger --ledger-address-index 3 \
     --gas-limit=5000000 \
-    --function="set_old_collection" --arguments str:GIANT-1ed993 \
+    --function="set_old_collection" --arguments str:ELMAPES-c79879 \
     --send \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
 
 set_new_collection() {
     erdpy contract call ${CONTRACT} \
-    --recall-nonce --pem=${USER_PEM} \
+    --recall-nonce \
+    --ledger --ledger-address-index 3 \
     --gas-limit=5000000 \
-    --function="set_new_collection" --arguments str:ELEREVAMP-a32b77 \
+    --function="set_new_collection" --arguments str:ELEMAPES-fdf51e \
     --send \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
@@ -39,7 +41,7 @@ set_nfts_left_to_send() {
     erdpy contract call ${CONTRACT} \
     --recall-nonce --pem=${USER_PEM} \
     --gas-limit=5000000 \
-    --function="set_nfts_left_to_send" --arguments 10 \
+    --function="set_nfts_left_to_send" --arguments 1400 \
     --send \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
@@ -64,10 +66,11 @@ set_thunders_old() {
 
 set_thunders_new() {
     erdpy contract call ${CONTRACT} \
-    --recall-nonce --pem=${USER_PEM} \
-    --gas-limit=5000000 \
-    --function="set_thunders_new" --arguments 9 \
-    --send \
+    --recall-nonce \
+    --ledger --ledger-address-index 3 \
+    --gas-limit=500000000 \
+    --function="set_thunders_new" --arguments 0x03e8 0x03de 0x0424 0x0407 0x0490 0x046d 0x045b 0x04db 0xa6 0x82 0x7d 0x02e3 0x05 \
+    --simulate \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
 }
 
@@ -81,7 +84,8 @@ get() {
 
 upgrade() {
     erdpy --verbose contract upgrade ${CONTRACT} \--project=${PROJECT} \
-    --recall-nonce --pem=${USER_PEM} \
+    --recall-nonce \
+    --ledger --ledger-address-index 3 \
     --gas-limit=50000000 \
     --send --outfile="deploy.interaction.json" \
     --proxy=${PROXY} --chain=${CHAIN_ID} || return
