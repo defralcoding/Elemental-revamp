@@ -20,7 +20,6 @@ export const YourNfts = () => {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				setUserNfts(data);
 			});
 	};

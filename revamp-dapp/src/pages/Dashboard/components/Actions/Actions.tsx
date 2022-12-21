@@ -37,7 +37,6 @@ export const Actions = () => {
 			.then((response) => response.json())
 			.then(async (data) => {
 				nfts = data;
-				console.log(nfts);
 
 				//Create transactions
 				let transactions = Array();
@@ -71,29 +70,6 @@ export const Actions = () => {
 					setTransactionSessionId(sessionId);
 				}
 			});
-
-		/*
-    const pingTransaction = {
-      value: pingAmount,
-      data: 'ping',
-      receiver: contractAddress,
-      gasLimit: '60000000'
-    };
-    await refreshAccount();
-
-    const { sessionId , error } = await sendTransactions({
-      transactions: pingTransaction,
-      transactionsDisplayInfo: {
-        processingMessage: 'Processing Ping transaction',
-        errorMessage: 'An error has occured during Ping',
-        successMessage: 'Ping transaction successful'
-      },
-      redirectAfterSign: false
-    });
-    if (sessionId != null) {
-      setTransactionSessionId(sessionId);
-    }
-    */
 	};
 
 	return (

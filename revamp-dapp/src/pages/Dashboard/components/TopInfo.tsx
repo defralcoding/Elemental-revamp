@@ -35,7 +35,6 @@ export const TopInfo = () => {
 		)
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				setUserNfts(data);
 			});
 	};
@@ -54,7 +53,6 @@ export const TopInfo = () => {
 			.then((response) => response.json())
 			.then(async (data) => {
 				nfts = data;
-				console.log(nfts);
 
 				//Create transactions
 				let transactions = Array();
@@ -80,7 +78,7 @@ export const TopInfo = () => {
 					transactionsDisplayInfo: {
 						processingMessage: "Processing Swap transaction",
 						errorMessage: "An error has occured during Swap",
-						successMessage: "Swap completed!",
+						successMessage: "Swap completed! :)",
 					},
 					redirectAfterSign: false,
 				});
