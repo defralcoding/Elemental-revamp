@@ -67,7 +67,7 @@ export const TopInfo = () => {
 						value: 0,
 						data: payload.toString() + "@" + "73776170", //swap
 						receiver: address,
-						gasLimit: 10_000_000,
+						gasLimit: 17_000_000,
 					});
 				});
 
